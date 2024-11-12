@@ -10,7 +10,7 @@
         public string NewValue { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public User User { get; set; } // Relație cu User
+        public User User { get; set; }
     }
 
 }
