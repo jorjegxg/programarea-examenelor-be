@@ -14,6 +14,5 @@
         public string Status { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public Faculty Faculty { get; set; }  // Foreign Key relationship
     }
 }
