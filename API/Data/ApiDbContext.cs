@@ -98,6 +98,13 @@ namespace API.Data
                 .WithMany()
                 .HasForeignKey(er => er.SessionID)
                 .OnDelete(DeleteBehavior.NoAction);
+          
+            modelBuilder.Entity<LabHolders>()
+            .HasOne(lh => lh.Professor)
+            .WithMany() // presupunând că un profesor poate fi asociat cu mai multe laburi
+            .HasForeignKey(lh => lh.ProfID)
+            .OnDelete(DeleteBehavior.Restrict);  // `Restrict` sau `NoAction`
+
 
             base.OnModelCreating(modelBuilder);
         }
