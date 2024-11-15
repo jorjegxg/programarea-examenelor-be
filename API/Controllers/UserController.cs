@@ -14,47 +14,31 @@ namespace API.Controllers
         {
             _context = context;
         }
-
-        [HttpPost("add")]
-        public async Task<IActionResult> AddUser([FromBody] User user)
-        {
-            if (user == null)
-            {
-                return BadRequest("User data is null.");
-            }
-
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
-            if (existingUser != null)
-            {
-                return Conflict("A user with the same username already exists.");
-            }
-
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            return Ok("User added successfully.");
-        }
-        [HttpGet("students")]
-        public async Task<IActionResult> GetAllStudents()
+        [HttpGet("examrequests")]
+        public async Task<IActionResult> GetAllExamRequests()
         {
             try
             {
-                var students = await _context.Students
-                    .Include(s => s.User) // Include relația cu tabela `Users`
-                    .Include(s => s.Group) // Include relația cu tabela `Groups`
+                var examRequests = await _context.ExamRequests
+                    .Include(e => e.Group)         // Include relația cu tabela `Groups`
+                    .Include(e => e.Course)        // Include relația cu tabela `Courses`
+                    .Include(e => e.Room)          // Include relația cu tabela `Rooms`
+                    .Include(e => e.Assistant)     // Include relația cu tabela `Professors` (Assistant)
+                    .Include(e => e.Session)       // Include relația cu tabela `Sessions`
                     .ToListAsync();
 
-                if (students == null || !students.Any())
+                if (examRequests == null || !examRequests.Any())
                 {
-                    return NotFound("No students found.");
+                    return NotFound("No exam requests found.");
                 }
 
-                return Ok(students);
+                return Ok(examRequests);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+       
     }
 }
