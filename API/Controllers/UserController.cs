@@ -34,5 +34,27 @@ namespace API.Controllers
 
             return Ok("User added successfully.");
         }
+        [HttpGet("students")]
+        public async Task<IActionResult> GetAllStudents()
+        {
+            try
+            {
+                var students = await _context.Students
+                    .Include(s => s.User) // Include relația cu tabela `Users`
+                    .Include(s => s.Group) // Include relația cu tabela `Groups`
+                    .ToListAsync();
+
+                if (students == null || !students.Any())
+                {
+                    return NotFound("No students found.");
+                }
+
+                return Ok(students);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

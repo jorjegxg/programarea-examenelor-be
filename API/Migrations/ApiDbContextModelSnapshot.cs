@@ -30,14 +30,14 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseID"), 1L, 1);
 
-                    b.Property<int>("CourseHolderID")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProfID")
+                        .HasColumnType("int");
 
                     b.Property<int>("SpecializationID")
                         .HasColumnType("int");
@@ -45,19 +45,14 @@ namespace API.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubSpecializationID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CourseID");
 
-                    b.HasIndex("CourseHolderID");
+                    b.HasIndex("ProfID");
 
                     b.HasIndex("SpecializationID");
-
-                    b.HasIndex("SubSpecializationID");
 
                     b.ToTable("Courses");
                 });
@@ -187,14 +182,9 @@ namespace API.Migrations
                     b.Property<int>("SpecializationID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SubSpecializationID")
-                        .HasColumnType("int");
-
                     b.HasKey("GroupID");
 
                     b.HasIndex("SpecializationID");
-
-                    b.HasIndex("SubSpecializationID");
 
                     b.ToTable("Groups");
                 });
@@ -320,32 +310,6 @@ namespace API.Migrations
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("API.Models.RoomRequested", b =>
-                {
-                    b.Property<int>("RequestID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestID"), 1L, 1);
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ExamRequestRequestID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoomID")
-                        .HasColumnType("int");
-
-                    b.HasKey("RequestID");
-
-                    b.HasIndex("ExamRequestRequestID");
-
-                    b.HasIndex("RoomID");
-
-                    b.ToTable("roomRequesteds");
-                });
-
             modelBuilder.Entity("API.Models.Secretary", b =>
                 {
                     b.Property<int>("SecretaryID")
@@ -457,33 +421,6 @@ namespace API.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("API.Models.SubSpecialization", b =>
-                {
-                    b.Property<int>("SubSpecializationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubSpecializationID"), 1L, 1);
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SpecializationID")
-                        .HasColumnType("int");
-
-                    b.HasKey("SubSpecializationID");
-
-                    b.HasIndex("SpecializationID");
-
-                    b.ToTable("SubSpecializations");
-                });
-
             modelBuilder.Entity("API.Models.User", b =>
                 {
                     b.Property<int>("UserID")
@@ -529,9 +466,9 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Course", b =>
                 {
-                    b.HasOne("API.Models.Professor", "CourseHolder")
+                    b.HasOne("API.Models.Professor", "Professor")
                         .WithMany()
-                        .HasForeignKey("CourseHolderID")
+                        .HasForeignKey("ProfID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -541,17 +478,9 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("API.Models.SubSpecialization", "SubSpecialization")
-                        .WithMany()
-                        .HasForeignKey("SubSpecializationID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("CourseHolder");
+                    b.Navigation("Professor");
 
                     b.Navigation("Specialization");
-
-                    b.Navigation("SubSpecialization");
                 });
 
             modelBuilder.Entity("API.Models.Department", b =>
@@ -616,15 +545,7 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Models.SubSpecialization", "SubSpecialization")
-                        .WithMany()
-                        .HasForeignKey("SubSpecializationID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("Specialization");
-
-                    b.Navigation("SubSpecialization");
                 });
 
             modelBuilder.Entity("API.Models.LabHolders", b =>
@@ -685,23 +606,6 @@ namespace API.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("API.Models.RoomRequested", b =>
-                {
-                    b.HasOne("API.Models.ExamRequest", "ExamRequest")
-                        .WithMany()
-                        .HasForeignKey("ExamRequestRequestID");
-
-                    b.HasOne("API.Models.Room", "Room")
-                        .WithMany()
-                        .HasForeignKey("RoomID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExamRequest");
-
-                    b.Navigation("Room");
-                });
-
             modelBuilder.Entity("API.Models.Secretary", b =>
                 {
                     b.HasOne("API.Models.User", "User")
@@ -741,17 +645,6 @@ namespace API.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("API.Models.SubSpecialization", b =>
-                {
-                    b.HasOne("API.Models.Specialization", "Specialization")
-                        .WithMany()
-                        .HasForeignKey("SpecializationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Specialization");
                 });
 #pragma warning restore 612, 618
         }
