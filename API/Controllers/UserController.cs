@@ -1,6 +1,7 @@
 ﻿using API.Models;
 using Microsoft.AspNetCore.Mvc;
 using API.Data;
+using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [ApiController]
@@ -20,6 +21,12 @@ namespace API.Controllers
             if (user == null)
             {
                 return BadRequest("User data is null.");
+            }
+
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
+            if (existingUser != null)
+            {
+                return Conflict("A user with the same username already exists.");
             }
 
             await _context.Users.AddAsync(user);
