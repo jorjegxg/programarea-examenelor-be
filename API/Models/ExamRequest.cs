@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace API.Models
 {
@@ -8,10 +9,9 @@ namespace API.Models
         public int RequestID { get; set; }
         public int GroupID { get; set; }
         public int CourseID { get; set; }
-        public int RoomID { get; set; }
         public int AssistantID { get; set; }
         public int SessionID { get; set; }
-        public string Type { get; set; } // ex: exam, colloq
+        public string Type { get; set; }
         public DateTime Date { get; set; }
         public TimeSpan TimeStart { get; set; }
         public TimeSpan Duration { get; set; }
@@ -19,11 +19,14 @@ namespace API.Models
         public string Status { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public Group Group { get; set; }
-        public Course Course { get; set; }
-        public Room Room { get; set; }
-        public Professor Assistant { get; set; }
-        public Session Session { get; set; }
+        public virtual Group Group { get; set; }
+        public virtual Course Course { get; set; }
+        public virtual Professor Assistant { get; set; }
+        public virtual Session Session { get; set; }
+
+        [JsonIgnore] 
+        public List<ExamRequestRoom> ExamRequestRooms { get; set; }
     }
+
 
 }

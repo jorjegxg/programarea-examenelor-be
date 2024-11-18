@@ -20,25 +20,39 @@ namespace API.Controllers
             try
             {
                 var examRequests = await _context.ExamRequests
-                    .Include(e => e.Group)         // Include relația cu tabela `Groups`
-                    .Include(e => e.Course)        // Include relația cu tabela `Courses`
-                    .Include(e => e.Room)          // Include relația cu tabela `Rooms`
-                    .Include(e => e.Assistant)     // Include relația cu tabela `Professors` (Assistant)
-                    .Include(e => e.Session)       // Include relația cu tabela `Sessions`
-                    .ToListAsync();
+                .Include(e => e.Group)
+                    .ThenInclude(g => g.Specialization)
+                    .ThenInclude(s => s.Faculty)
+                .Include(e => e.Course)
+                    .ThenInclude(c => c.Professor)
+                        .ThenInclude(p => p.Department) 
+                .Include(e => e.Course)
+                    .ThenInclude(c => c.Professor)
+                        .ThenInclude(p => p.User) 
+                .Include(e => e.Assistant)
+                    .ThenInclude(a => a.User) 
+                .Include(e => e.Assistant)
+                    .ThenInclude(a => a.Department) 
+                .Include(e => e.Session)
+                .Include(e => e.ExamRequestRooms)
+                    .ThenInclude(er => er.Room)
+                .ToListAsync();
+
+
 
                 if (examRequests == null || !examRequests.Any())
                 {
                     return NotFound("No exam requests found.");
                 }
 
-                return Ok(examRequests);
+                return Ok(examRequests[0]);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-       
+
+
     }
 }

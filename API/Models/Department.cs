@@ -8,6 +8,7 @@
         public string Description { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public Faculty Faculty { get; set; }  // Foreign Key relationship
+        public virtual Faculty Faculty { get; set; }  // Foreign Key relationship
+
     }
 }

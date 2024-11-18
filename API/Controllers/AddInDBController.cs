@@ -46,7 +46,6 @@ namespace API.Controllers
             return CreatedAtAction("GetCourse", new { id = course.CourseID }, course);
         }
 
-        // POST pentru Department
         [HttpPost("department")]
         public async Task<IActionResult> CreateDepartment([FromBody] Department department)
         {
@@ -61,7 +60,6 @@ namespace API.Controllers
             return CreatedAtAction("GetDepartment", new { id = department.DepartmentID }, department);
         }
 
-        // POST pentru Faculty
         [HttpPost("faculty")]
         public async Task<IActionResult> CreateFaculty([FromBody] Faculty faculty)
         {
@@ -76,7 +74,6 @@ namespace API.Controllers
             return CreatedAtAction("GetFaculty", new { id = faculty.FacultyID }, faculty);
         }
 
-        // POST pentru Group
         [HttpPost("group")]
         public async Task<IActionResult> CreateGroup([FromBody] Group group)
         {
@@ -91,7 +88,6 @@ namespace API.Controllers
             return CreatedAtAction("GetGroup", new { id = group.GroupID }, group);
         }
 
-        // POST pentru LabHolders
         [HttpPost("labholder")]
         public async Task<IActionResult> CreateLabHolder([FromBody] LabHolders labHolders)
         {
@@ -106,7 +102,6 @@ namespace API.Controllers
             return CreatedAtAction("GetLabHolder", new { id = labHolders.LabId }, labHolders);
         }
 
-        // POST pentru Professor
         [HttpPost("professor")]
         public async Task<IActionResult> CreateProfessor([FromBody] Professor professor)
         {
@@ -129,21 +124,17 @@ namespace API.Controllers
                 return BadRequest("Invalid specialization data.");
             }
 
-            // Verificăm dacă Facultatea există
             var faculty = await _context.Faculties.FindAsync(specialization.FacultyID);
             if (faculty == null)
             {
                 return NotFound("Faculty not found.");
             }
 
-            // Asociem facultatea cu specializarea
             specialization.Faculty = faculty;
 
-            // Salvăm specializarea în baza de date
             _context.Specializations.Add(specialization);
             await _context.SaveChangesAsync();
 
-            // Returnăm specializarea creată
             return Ok(specialization);
         }
 
@@ -162,37 +153,38 @@ namespace API.Controllers
 
             return CreatedAtAction("GetStudent", new { id = student.StudentID }, student);
         }
-        [HttpPost]
-        public async Task<IActionResult> CreateExamRequest([FromBody] ExamRequest examRequest)
+        [HttpPost("CreateExamRequest")]
+        public async Task<IActionResult> CreateExamRequest([FromBody] CreateExamRequestDto examRequestDto)
         {
-            if (examRequest == null)
+            if (examRequestDto == null)
             {
                 return BadRequest("Invalid request data.");
             }
 
-            // Validare: Verifică dacă toate entitățile asociate există
-            var group = await _context.Groups.FindAsync(examRequest.GroupID);
+            var group = await _context.Groups.FindAsync(examRequestDto.GroupID);
             if (group == null)
             {
                 return NotFound("Group not found.");
             }
 
-            var course = await _context.Courses.FindAsync(examRequest.CourseID);
+            var course = await _context.Courses.FindAsync(examRequestDto.CourseID);
             if (course == null)
             {
                 return NotFound("Course not found.");
             }
 
-            var room = await _context.Rooms.FindAsync(examRequest.RoomID);
-            if (room == null)
+            var rooms = await _context.Rooms
+                .Where(r => examRequestDto.RoomIDs.Contains(r.RoomID))
+                .ToListAsync();
+            if (rooms.Count != examRequestDto.RoomIDs.Count)
             {
-                return NotFound("Room not found.");
+                return NotFound("One or more rooms not found.");
             }
 
             var labHolder = await _context.LabHolders
                 .Include(lh => lh.Course)
                 .Include(lh => lh.Professor)
-                .Where(lh => lh.LabId == examRequest.AssistantID && lh.CourseID == examRequest.CourseID)
+                .Where(lh => lh.LabId == examRequestDto.AssistantID && lh.CourseID == examRequestDto.CourseID)
                 .FirstOrDefaultAsync();
 
             if (labHolder == null)
@@ -200,30 +192,42 @@ namespace API.Controllers
                 return NotFound("Assistant not found in the specified course.");
             }
 
-            var assistant = labHolder.Professor;
-            if (assistant == null)
-            {
-                return NotFound("Assistant not found.");
-            }
-
-            var session = await _context.Sessions.FindAsync(examRequest.SessionID);
+            var session = await _context.Sessions.FindAsync(examRequestDto.SessionID);
             if (session == null)
             {
                 return NotFound("Session not found.");
             }
 
-            // Salvarea cererii în baza de date
-            examRequest.CreationDate = DateTime.UtcNow;  // Setează data de creare
-            examRequest.Assistant = assistant;
-            examRequest.Course = course;
-            examRequest.Room = room;
+            // Creare obiect `ExamRequest`
+            var examRequest = new ExamRequest
+            {
+                GroupID = examRequestDto.GroupID,
+                CourseID = examRequestDto.CourseID,
+                AssistantID = examRequestDto.AssistantID,
+                SessionID = examRequestDto.SessionID,
+                Type = examRequestDto.Type,
+                Date = examRequestDto.Date,
+                TimeStart = examRequestDto.TimeStart,
+                Duration = examRequestDto.Duration,
+                Details = examRequestDto.Details,
+                Status = examRequestDto.Status,
+                CreationDate = DateTime.UtcNow,
+                ExamRequestRooms = rooms.Select(r => new ExamRequestRoom
+                {
+                    RoomID = r.RoomID
+                }).ToList()
+            };
             examRequest.Session = session;
+            examRequest.Course = course;
+            examRequest.Group = group;
+            examRequest.Assistant = labHolder.Professor;
+
             _context.ExamRequests.Add(examRequest);
             await _context.SaveChangesAsync();
 
-            // Returnează răspunsul cu locația cererii create
             return Ok(examRequest);
         }
+
 
     }
 }

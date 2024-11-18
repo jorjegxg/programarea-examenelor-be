@@ -10,8 +10,8 @@ namespace API.Models
         public int CourseID { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public Professor Professor { get; set; } // Relație cu Professor
-        public Course Course { get; set; } // Relație cu Course
+        public virtual Professor Professor { get; set; } // Relație cu Professor
+        public virtual Course Course { get; set; } // Relație cu Course
     }
 
 }
