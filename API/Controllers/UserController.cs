@@ -45,7 +45,7 @@ namespace API.Controllers
                     return NotFound("No exam requests found.");
                 }
 
-                return Ok(examRequests[0]);
+                return Ok(examRequests);
             }
             catch (Exception ex)
             {
