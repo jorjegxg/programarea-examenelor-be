@@ -22,6 +22,7 @@ namespace API.Data
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Specialization> Specializations { get; set; }
         public DbSet<LabHolders>LabHolders { get; set; }
+        public DbSet<ExamRequestRoom> ExamRequestRooms { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -37,17 +38,16 @@ namespace API.Data
                 .HasForeignKey(s => s.GroupID)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Configurare pentru tabela Courses pentru a evita multiple cascade paths
             modelBuilder.Entity<Course>()
                 .HasOne(c => c.Professor)
                 .WithMany()
                 .HasForeignKey(c => c.ProfID)
-                .OnDelete(DeleteBehavior.Cascade); // Păstrăm cascada pentru Professor
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Course>()
         .HasOne(c => c.Specialization)
         .WithMany()
         .HasForeignKey(c => c.SpecializationID)
-        .OnDelete(DeleteBehavior.NoAction);  // Folosim NoAction pentru a evita multiple cascade paths
+        .OnDelete(DeleteBehavior.NoAction);
 
            
             modelBuilder.Entity<Professor>()
@@ -65,32 +65,27 @@ namespace API.Data
             .HasOne(g => g.Specialization)
             .WithMany()
             .HasForeignKey(g => g.SpecializationID)
-            .OnDelete(DeleteBehavior.Cascade);  // Păstrează cascadă doar pentru una dintre relații
+            .OnDelete(DeleteBehavior.Cascade); 
 
            
             modelBuilder.Entity<ExamRequest>()
         .HasOne(er => er.Course)
         .WithMany()
         .HasForeignKey(er => er.CourseID)
-        .OnDelete(DeleteBehavior.Cascade);  // Păstrăm cascada pentru Course
+        .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<ExamRequest>()
                 .HasOne(er => er.Group)
                 .WithMany()
                 .HasForeignKey(er => er.GroupID)
-                .OnDelete(DeleteBehavior.NoAction);  // Folosim NoAction pentru a evita cascade multiple
+                .OnDelete(DeleteBehavior.NoAction); 
 
             modelBuilder.Entity<ExamRequest>()
                 .HasOne(er => er.Assistant)
                 .WithMany()
                 .HasForeignKey(er => er.AssistantID)
-                .OnDelete(DeleteBehavior.NoAction);  // Folosim NoAction și pentru această relație
+                .OnDelete(DeleteBehavior.NoAction); 
 
-            modelBuilder.Entity<ExamRequest>()
-               .HasOne(er => er.Room)
-               .WithMany()
-               .HasForeignKey(er => er.RoomID)
-               .OnDelete(DeleteBehavior.NoAction);
 
 
             modelBuilder.Entity<ExamRequest>()
@@ -101,9 +96,18 @@ namespace API.Data
           
             modelBuilder.Entity<LabHolders>()
             .HasOne(lh => lh.Professor)
-            .WithMany() // presupunând că un profesor poate fi asociat cu mai multe laburi
+            .WithMany()
             .HasForeignKey(lh => lh.ProfID)
-            .OnDelete(DeleteBehavior.Restrict);  // `Restrict` sau `NoAction`
+            .OnDelete(DeleteBehavior.Restrict);  
+            modelBuilder.Entity<ExamRequestRoom>()
+       .HasOne(er => er.ExamRequest)
+       .WithMany(er => er.ExamRequestRooms)
+       .HasForeignKey(er => er.ExamRequestID);
+
+            modelBuilder.Entity<ExamRequestRoom>()
+                .HasOne(er => er.Room)
+                .WithMany(r => r.ExamRequestRooms)
+                .HasForeignKey(er => er.RoomID);
 
 
             base.OnModelCreating(modelBuilder);

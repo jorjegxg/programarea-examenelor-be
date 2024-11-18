@@ -10,7 +10,10 @@
         public string Description { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public Department Department { get; set; } // Relație cu Department
+        public virtual Department Department { get; set; }
+
+        public ICollection<ExamRequestRoom> ExamRequestRooms { get; set; } 
     }
+
 
 }

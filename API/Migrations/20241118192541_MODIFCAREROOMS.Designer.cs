@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241118192541_MODIFCAREROOMS")]
+    partial class MODIFCAREROOMS
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +56,7 @@ namespace API.Migrations
 
                     b.HasIndex("SpecializationID");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("API.Models.Department", b =>
@@ -81,7 +83,7 @@ namespace API.Migrations
 
                     b.HasIndex("FacultyID");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("API.Models.ExamRequest", b =>
@@ -135,7 +137,7 @@ namespace API.Migrations
 
                     b.HasIndex("SessionID");
 
-                    b.ToTable("ExamRequests", (string)null);
+                    b.ToTable("ExamRequests");
                 });
 
             modelBuilder.Entity("API.Models.ExamRequestRoom", b =>
@@ -158,7 +160,7 @@ namespace API.Migrations
 
                     b.HasIndex("RoomID");
 
-                    b.ToTable("ExamRequestRooms", (string)null);
+                    b.ToTable("ExamRequestRooms");
                 });
 
             modelBuilder.Entity("API.Models.Faculty", b =>
@@ -180,7 +182,7 @@ namespace API.Migrations
 
                     b.HasKey("FacultyID");
 
-                    b.ToTable("Faculties", (string)null);
+                    b.ToTable("Faculties");
                 });
 
             modelBuilder.Entity("API.Models.Group", b =>
@@ -204,7 +206,7 @@ namespace API.Migrations
 
                     b.HasIndex("SpecializationID");
 
-                    b.ToTable("Groups", (string)null);
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("API.Models.LabHolders", b =>
@@ -230,7 +232,7 @@ namespace API.Migrations
 
                     b.HasIndex("ProfID");
 
-                    b.ToTable("LabHolders", (string)null);
+                    b.ToTable("LabHolders");
                 });
 
             modelBuilder.Entity("API.Models.Modification", b =>
@@ -260,7 +262,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Modifications", (string)null);
+                    b.ToTable("Modifications");
                 });
 
             modelBuilder.Entity("API.Models.Professor", b =>
@@ -289,7 +291,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Professors", (string)null);
+                    b.ToTable("Professors");
                 });
 
             modelBuilder.Entity("API.Models.Room", b =>
@@ -322,7 +324,7 @@ namespace API.Migrations
 
                     b.HasIndex("DepartmentID");
 
-                    b.ToTable("Rooms", (string)null);
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("API.Models.Secretary", b =>
@@ -355,7 +357,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Secretaries", (string)null);
+                    b.ToTable("Secretaries");
                 });
 
             modelBuilder.Entity("API.Models.Session", b =>
@@ -380,7 +382,7 @@ namespace API.Migrations
 
                     b.HasKey("SessionID");
 
-                    b.ToTable("Sessions", (string)null);
+                    b.ToTable("Sessions");
                 });
 
             modelBuilder.Entity("API.Models.Specialization", b =>
@@ -407,7 +409,7 @@ namespace API.Migrations
 
                     b.HasIndex("FacultyID");
 
-                    b.ToTable("Specializations", (string)null);
+                    b.ToTable("Specializations");
                 });
 
             modelBuilder.Entity("API.Models.Student", b =>
@@ -433,7 +435,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("API.Models.User", b =>
@@ -476,7 +478,7 @@ namespace API.Migrations
 
                     b.HasKey("UserID");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("API.Models.Course", b =>

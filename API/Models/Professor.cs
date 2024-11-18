@@ -11,7 +11,8 @@ namespace API.Models
         public string Title { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public User User { get; set; } // Relație cu User
-        public Department Department { get; set; } // Relație cu Department
+        public virtual Department Department { get; set; }
+        public virtual User User { get; set; } // Relația cu User
+
     }
 }

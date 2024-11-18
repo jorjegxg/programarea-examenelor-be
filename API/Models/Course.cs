@@ -10,8 +10,8 @@
         public string Status { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public Professor Professor { get; set; } // Relație cu Professor (titularul cursului)
-        public Specialization Specialization { get; set; }
+        public virtual Professor Professor { get; set; } // Relație cu Professor (titularul cursului)
+        public virtual Specialization Specialization { get; set; }
     }
 
 }
